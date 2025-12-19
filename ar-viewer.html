@@ -10,9 +10,15 @@
     <style>
       body {
         margin: 0;
-        background: transparent;
+        background: linear-gradient(
+          to bottom,
+          #87ceeb,
+          #1e90ff
+        ); /* Dégradé bleu pour simuler l'eau */
         font-family: Arial;
         text-align: center;
+        min-height: 100vh;
+        overflow-y: auto;
       }
       model-viewer {
         width: 100%;
@@ -36,24 +42,165 @@
         color: white;
         cursor: pointer;
       }
+
+      /* Styles pour les éléments de l'aquarium */
+      .aquarium-elements {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none; /* Permet d'interagir avec le model-viewer en dessous */
+        z-index: 1; /* Assure que les éléments sont au-dessus du fond mais en dessous du model-viewer */
+      }
+
+      .bubble-container {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .bubble {
+        position: absolute;
+        background-color: rgba(
+          255,
+          255,
+          255,
+          0.5
+        ); /* Bulles semi-transparentes */
+        border-radius: 50%;
+        animation: bubble-rise linear infinite;
+      }
+
+      @keyframes bubble-rise {
+        0% {
+          transform: translateY(100vh) scale(0);
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        80% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-10%) scale(1.2);
+          opacity: 0;
+        }
+      }
+
+      /* Styles pour le panneau d'informations */
+      .info-panel {
+        background-color: rgba(0, 0, 0, 0.7); 
+        color: white;
+        padding: 20px;
+        margin-top: 20px;
+        border-top-left-radius: 20px;
+        width: 50%;
+        .info-panel h3 
+        {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 1.5em;
+      }
+
+    border-top-right-radius: 20px;
+        text-align: left;
+      }
+
+      /* Styles pour le conteneur principal */
+      .main-content-container {
+        display: flex;
+        flex-direction: column; /* Par défaut, empilé pour mobile */
+        width: 100%;
+        height: 100vh; /* Ajuster la hauteur automatiquement */
+      }
+
+      .info-panel h3 {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 1.5em;
+      }
+
+      .tabs {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .tab-button {
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.7);
+        padding: 10px 15px;
+        cursor: pointer;
+        font-size: 1em;
+        transition: color 0.3s, border-bottom 0.3s;
+      }
+
+      .tab-button.active {
+        color: white;
+        border-bottom: 2px solid white;
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      .buttons 
+      {
+        position: absolute;
+        top: 8%;
+        left: 82%;
+        width: 16%;
+      }
+
     </style>
   </head>
   <body>
-    <h2>Immersion – Eau augmentée</h2>
+    <div class="aquarium-elements">
+      <div class="bubble-container"></div>
+    </div>
 
-    <model-viewer
-      id="viewer"
-      src="fish3.glb"
-      ar
-      ar-modes="scene-viewer quick-look webxr"
-      camera-controls
-      auto-rotate
-      shadow-intensity="1"
-      autoplay
-    >
-    </model-viewer>
+    <div class="main-content-container">
+      <model-viewer
+        id="viewer"
+        src="fish3.glb"
+        ar
+        ar-modes="scene-viewer quick-look webxr"
+        camera-controls
+        auto-rotate
+        shadow-intensity="1"
+        autoplay
+      >
+      </model-viewer>
 
-    <div class="buttons">
+      <div class="info-panel">
+        <h3 id="fish-name"></h3>
+        <div class="tabs">
+          <button class="tab-button active" data-tab="overview">
+            Overview
+          </button>
+          <button class="tab-button" data-tab="habitat">Habitat</button>
+          <button class="tab-button" data-tab="diet">Diet</button>
+          <button class="tab-button" data-tab="behavior">Behavior</button>
+        </div>
+        <div class="tab-content active" id="overview-content"></div>
+        <div class="tab-content" id="habitat-content"></div>
+        <div class="tab-content" id="diet-content"></div>
+        <div class="tab-content" id="behavior-content"></div>
+      </div>
+    </div>
+   
+     <div class="buttons">
       <button onclick="changeModel('fish3.glb')">🐟 Poisson Rouge</button>
       <button onclick="changeModel('bluePowderTang.glb')">
         🐠 Poisson-Chirurgien Bleu
@@ -63,6 +210,7 @@
       </button>
       <button onclick="changeModel('algues.glb')">🌿 Algue</button>
     </div>
+    
 
     <script>
       const modelViewerElement = document.getElementById("viewer");
@@ -70,8 +218,64 @@
       const modelFromUrl = urlParams.get("model");
       const buttonsContainer = document.querySelector(".buttons");
       const allButtons = buttonsContainer.querySelectorAll("button");
+      const infoPanel = document.querySelector(".info-panel");
+      const fishNameElement = document.getElementById("fish-name");
+      const tabButtons = document.querySelectorAll(".tab-button");
+      const tabContents = document.querySelectorAll(".tab-content");
 
-      // Fonction pour mettre à jour le modèle et les boutons
+      // Données pour chaque modèle
+      const modelData = {
+        "fish3.glb": {
+          name: "POISSON ROUGE",
+          overview: `
+          <p><b>Nom scientifique:</b> Carassius auratus</p>
+          <p><b>Taille:</b> Environ 10-20 cm</p>
+          <p><b>Durée de vie:</b> 10-15 ans (en aquarium bien entretenu)</p>
+          <p>Le poisson rouge est l'un des poissons d'aquarium les plus populaires au monde. Originaire d'Asie de l'Est, il a été domestiqué il y a plus de mille ans en Chine. Il est apprécié pour sa robustesse, sa variété de formes et de couleurs, et sa facilité d'entretien, bien qu'il nécessite un espace suffisant pour s'épanouir.</p>
+        `,
+          habitat: `<p>Historiquement, le poisson rouge est originaire des eaux douces et calmes d'Asie de l'Est, notamment en Chine et au Japon. Il préfère les étangs, les lacs et les rivières à faible courant, avec une végétation dense. En aquarium, il a besoin d'un environnement stable avec une bonne filtration et de l'espace pour nager.</p>`,
+          diet: `<p>Le poisson rouge est omnivore avec une tendance herbivore. Dans la nature, il se nourrit d'algues, de plantes aquatiques, de petits insectes, de larves et de crustacés. En captivité, une alimentation équilibrée doit inclure des granulés ou flocons de haute qualité spécifiques aux poissons rouges, complétés par des légumes blanchis (petits pois, épinards) et occasionnellement des protéines comme des vers de vase ou des daphnies.</p>`,
+          behavior: `<p>Les poissons rouges sont des créatures paisibles et grégaires. Ils aiment vivre en groupe et peuvent devenir très sociables avec leurs propriétaires. Ils sont connus pour leur curiosité et leur capacité à reconnaître les personnes qui les nourrissent. Ils passent une grande partie de leur temps à fouiller le substrat à la recherche de nourriture.</p>`,
+        },
+        "bluePowderTang.glb": {
+          name: "POISSON-CHIRURGIEN BLEU",
+          overview: `
+          <p><b>Nom scientifique:</b> Paracanthurus hepatus</p>
+          <p><b>Taille:</b> Environ 20-30 cm</p>
+          <p><b>Durée de vie:</b> 8-20 ans</p>
+          <p>Le poisson-chirurgien bleu, également connu sous le nom de Dory dans le film "Le Monde de Nemo", est célèbre pour ses couleurs vives : un corps bleu électrique, une queue jaune vif et une tache noire distinctive. C'est un poisson récifal très actif qui joue un rôle important dans le maintien de la santé des récifs coralliens en broutant les algues.</p>
+        `,
+          habitat: `<p>Le poisson-chirurgien bleu est largement répandu dans les eaux tropicales de l'Indo-Pacifique, des Philippines à la Grande Barrière de Corail. Il habite les zones riches en coraux des récifs extérieurs, où il trouve à la fois abri et nourriture. Il préfère les eaux claires et bien oxygénées.</p>`,
+          diet: `<p>C'est un herbivore strict, se nourrissant principalement d'algues filamenteuses et d'autres végétaux marins qu'il broute sur les rochers et les coraux. Cette habitude alimentaire est cruciale pour prévenir la prolifération excessive d'algues qui pourrait étouffer les coraux. En aquarium, son régime doit être composé majoritairement d'algues nori, de spiruline et d'aliments végétaux.</p>`,
+          behavior: `<p>Le poisson-chirurgien bleu est un poisson diurne, très actif et nageur. Il peut être territorial, surtout envers les autres poissons-chirurgiens ou les espèces de forme similaire. Il est souvent observé en petits groupes ou en solitaire, se déplaçant constamment à la recherche de nourriture. Il possède des épines scalpel-aiguisées à la base de sa queue, qu'il utilise pour se défendre.</p>`,
+        },
+        "ButterflyFish.glb": {
+          name: "POISSON-PAPILLON",
+          overview: `
+          <p><b>Nom scientifique:</b> Chaetodontidae (famille)</p>
+          <p><b>Taille:</b> Environ 12-22 cm (selon l'espèce)</p>
+          <p><b>Durée de vie:</b> 5-10 ans</p>
+          <p>Les poissons-papillons sont un groupe diversifié de poissons marins tropicaux, reconnaissables à leurs corps plats, leurs couleurs vives et leurs motifs audacieux, souvent avec une tache oculaire pour dérouter les prédateurs. Ils ont un petit museau pointu, idéal pour cueillir de petites proies ou brouter les coraux.</p>
+        `,
+          habitat: `<p>Les poissons-papillons habitent les récifs coralliens tropicaux et subtropicaux du monde entier, principalement dans l'océan Atlantique, Indien et Pacifique. Ils sont souvent trouvés dans les eaux peu profondes, riches en coraux, où ils peuvent trouver de la nourriture et des abris.</p>`,
+          diet: `<p>Le régime alimentaire des poissons-papillons varie considérablement selon l'espèce. Certains sont des corallivores stricts, se nourrissant exclusivement de polypes de coraux, tandis que d'autres sont omnivores, consommant des algues, des petits invertébrés (vers, crustacés) et du zooplancton. Leur bouche spécialisée leur permet d'accéder à des sources de nourriture difficiles d'accès.</p>`,
+          behavior: `<p>La plupart des poissons-papillons sont diurnes et très actifs. Beaucoup d'espèces vivent en couples monogames qui restent ensemble pendant de longues périodes, voire toute leur vie. D'autres peuvent être solitaires ou former de petits groupes. Ils sont généralement territoriaux et défendent leur zone de nourrissage contre les intrus.</p>`,
+        },
+        "algues.glb": {
+          name: "ALGUE",
+          overview: `
+          <p><b>Nom scientifique:</b> Divers (ex: Fucus, Laminaria, Caulerpa)</p>
+          <p><b>Taille:</b> Variable, de quelques millimètres à plusieurs dizaines de mètres</p>
+          <p><b>Durée de vie:</b> Variable, de quelques semaines à plusieurs années</p>
+          <p>Les algues sont des organismes photosynthétiques fondamentaux pour la vie marine. Elles ne sont pas des plantes au sens strict, mais elles jouent un rôle écologique similaire en produisant de l'oxygène et en servant de base à de nombreuses chaînes alimentaires aquatiques. Elles existent sous une incroyable diversité de formes, de tailles et de couleurs.</p>
+        `,
+          habitat: `<p>Les algues sont présentes dans presque tous les environnements aquatiques de la planète, des océans polaires aux eaux tropicales, en passant par les lacs et les rivières. Elles peuvent être benthiques (fixées au fond) ou planctoniques (flottant librement). Leur répartition dépend de facteurs comme la lumière, la température, la salinité et la disponibilité des nutriments.</p>`,
+          diet: `<p>Les algues sont autotrophes, ce qui signifie qu'elles produisent leur propre nourriture par photosynthèse. Elles utilisent la lumière du soleil, le dioxyde de carbone et les nutriments dissous dans l'eau pour créer des sucres et de l'oxygène. Elles sont à la base de la plupart des écosystèmes aquatiques.</p>`,
+          behavior: `<p>Le "comportement" des algues est principalement lié à leur croissance et à leur reproduction. Elles peuvent se reproduire de manière asexuée (par fragmentation ou spores) ou sexuée. Certaines algues forment des forêts sous-marines denses (comme les kelps), offrant abri et nourriture à une multitude d'organismes marins. D'autres peuvent proliférer rapidement, formant des "blooms" algaux.</p>`,
+        },
+      };
+
+      // Fonction pour mettre à jour le modèle, les boutons et le panneau d'informations
       function updateModelAndButtons(modelName) {
         if (modelName) {
           modelViewerElement.setAttribute("src", modelName);
@@ -83,8 +287,44 @@
               button.style.display = "inline-block";
             }
           });
+
+          // Mettre à jour le panneau d'informations
+          const data = modelData[modelName];
+          if (data) {
+            fishNameElement.textContent = data.name;
+            document.getElementById("overview-content").innerHTML =
+              data.overview;
+            document.getElementById("habitat-content").innerHTML = data.habitat;
+            document.getElementById("diet-content").innerHTML = data.diet;
+            document.getElementById("behavior-content").innerHTML =
+              data.behavior;
+
+            // Réinitialiser les onglets à 'Overview'
+            tabButtons.forEach((button) => button.classList.remove("active"));
+            tabContents.forEach((content) =>
+              content.classList.remove("active")
+            );
+            document
+              .querySelector('.tab-button[data-tab="overview"]')
+              .classList.add("active");
+            document.getElementById("overview-content").classList.add("active");
+          }
         }
       }
+
+      // Gérer le changement d'onglet
+      tabButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          tabButtons.forEach((btn) => btn.classList.remove("active"));
+          button.classList.add("active");
+
+          tabContents.forEach((content) => content.classList.remove("active"));
+          const targetTab = button.dataset.tab;
+          document
+            .getElementById(`${targetTab}-content`)
+            .classList.add("active");
+        });
+      });
 
       // Si un modèle est passé via l'URL, l'utiliser
       if (modelFromUrl) {
@@ -99,6 +339,30 @@
       function changeModel(model) {
         updateModelAndButtons(model);
       }
+
+      // Génération dynamique des bulles
+      const bubbleContainer = document.querySelector(".bubble-container");
+
+      function createBubble() {
+        const bubble = document.createElement("div");
+        bubble.classList.add("bubble");
+        const size = Math.random() * 20 + 10; // Taille entre 10px et 30px
+        bubble.style.width = `${size}px`;
+        bubble.style.height = `${size}px`;
+        bubble.style.left = `${Math.random() * 100}%`; // Position horizontale aléatoire
+        bubble.style.animationDuration = `${Math.random() * 6 + 4}s`; // Durée d'animation entre 4s et 10s
+        bubble.style.animationDelay = `${Math.random() * 2}s`; // Délai aléatoire
+
+        bubbleContainer.appendChild(bubble);
+
+        // Supprimer la bulle après son animation pour éviter d'encombrer le DOM
+        bubble.addEventListener("animationend", () => {
+          bubble.remove();
+        });
+      }
+
+      // Générer des bulles toutes les 300ms
+      setInterval(createBubble, 300);
     </script>
   </body>
 </html>

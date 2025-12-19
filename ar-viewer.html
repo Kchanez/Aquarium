@@ -5,39 +5,50 @@
   <title>AR Viewer</title>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <style>
-    body {
+      body {
         margin: 0;
-      padding: 0;
-      width: 100vw;
-      height: 100vh;
-      background: transparent; /* Changé pour transparent */
-      position: relative;
+        background: transparent;
+        font-family: Arial;
+        text-align: center;
       }
-
-    model-viewer {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 10;
-    }
+      model-viewer {
+        width: 100%;
+        height: 60vh;
+      }
+      .buttons {
+        margin: 10px;
+      }
+      button {
+        padding: 10px 15px;
+        margin: 5px;
+        border-radius: 10px;
+        border: none;
+        background: #0077b6;
+        color: white;
+        cursor: pointer;
+      }
 
     </style>
   </head>
 <body>
   
+  <h2>Immersion – Eau augmentée</h2>
+
   <model-viewer
-      id="ar-model-viewer"
-      src="fish3.glb" 
-      ar
-      ar-modes="scene-viewer quick-look webxr"
-      camera-controls
-      shadow-intensity="1"
-      auto-rotate
-      autoplay
-      animation-name="nager"
-    ></model-viewer>
+    id="viewer"
+    src="fish3.glb"
+    ar
+    ar-modes="scene-viewer quick-look webxr"
+    camera-controls
+    auto-rotate
+    shadow-intensity="1">
+  </model-viewer>
+
+  <div class="buttons">
+    <button onclick="changeModel('fish3.glb')"> 🐟 Fish </button>
+    <button onclick="changeModel('algues.glb')"> 🐋 Algues</button>
+    <button onclick="changeModel('ButterflyFish.glb')"> 🫧 Butterfly Fish</button>
+  </div>
 
 
 
@@ -50,5 +61,11 @@
         modelViewer.src = model;
       }
     </script>
+  <script>
+    function changeModel(model) {
+      document.getElementById('viewer').setAttribute('src', model);
+    }
+  </script>
+
 </body>
 </html>

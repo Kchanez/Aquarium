@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expérience Eau AR</title>
+
+    <!-- Model Viewer -->
+    <script
+      type="module"
+      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
+    ></script>
+
+    <style>
+      body {
+        margin: 0;
+        background: linear-gradient(to bottom, #0077b6, #001219);
+        font-family: "Arial", sans-serif;
+        color: white;
+        text-align: center;
+        overflow: hidden;
+        height: 100vh;
+      }
+
+      .container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        padding: 20px;
+        box-sizing: border-box;
+      }
+
+      .app-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        margin-bottom: 20px;
+      }
+
+      .logo {
+        display: flex;
+      }
+
+      .status-icons img {
+        margin-left: 5px;
+      }
+
+      .aquarium-title {
+        font-size: 1.5em;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin-bottom: 30px;
+        letter-spacing: 1px;
+      }
+
+      .species-nav {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 30px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        padding-bottom: 10px;
+      }
+
+      .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        opacity: 0.6;
+        transition: opacity 0.3s ease;
+      }
+
+      .nav-item.active {
+        opacity: 1;
+        border-bottom: 2px solid white;
+        padding-bottom: 8px;
+      }
+
+      .nav-item img {
+        margin-bottom: 5px;
+      }
+      .nav-itemPor img
+    {
+        margin-bottom: 0px;
+    }
+      .nav-item span {
+        font-size: 0.8em;
+        text-transform: uppercase;
+      }
+
+      .species-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        flex-grow: 1;
+        overflow-y: auto;
+      }
+
+      .species-card {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        height: 200px; /* Hauteur fixe pour les cartes */
+      }
+
+      .species-card model-viewer {
+        width: 100%;
+        height: 100%;
+        --poster-color: transparent;
+      }
+
+      .species-name {
+        font-size: 0.9em;
+        font-weight: bold;
+        text-transform: uppercase;
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 5px 8px;
+        border-radius: 5px;
+      }
+
+      /* Styles responsives */
+      @media (max-width: 767px) {
+        .container {
+          padding: 10px;
+        }
+
+        .app-header {
+          flex-direction: column;
+          align-items: center;
+          margin-bottom: 15px;
+        }
+
+        .aquarium-title {
+          font-size: 1.2em;
+          margin-bottom: 15px;
+        }
+
+        .species-nav {
+          flex-wrap: wrap;
+          justify-content: center;
+          align-items: flex-end;
+          margin-bottom: 15px;
+        }
+
+        .nav-item {
+          margin: 5px 10px;
+        }
+
+        .species-grid {
+          grid-template-columns: 1fr; /* Une seule colonne pour les mobiles */
+          gap: 15px;
+        }
+
+        .species-card {
+          height: 150px; /* Hauteur ajustée pour les mobiles */
+          padding: 8px;
+        }
+
+        .species-name {
+          font-size: 0.8em;
+          padding: 4px 6px;
+        }
+      }
+
+      @media (min-width: 768px) and (max-width: 1023px) {
+        .container {
+          padding: 15px;
+        }
+
+        .aquarium-title {
+          font-size: 1.3em;
+        }
+
+        .species-grid {
+          grid-template-columns: 1fr 1fr; /* Deux colonnes pour les tablettes */
+          gap: 20px;
+        }
+
+        .species-card {
+          height: 180px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <header class="app-header">
+        <div class="logo">
+          <img src="logo.svg" alt="Wifi" style="width: 10%;" />
+        </div>
+        <div class="status-icons">
+          <!-- Placeholder for status icons -->
+        </div>
+      </header>
+
+      <h1 class="aquarium-title">SPECIES PRESENT IN THIS AQUARIUM</h1>
+
+      <nav class="species-nav">
+        <div class="nav-item active">
+          <img src="./poisson.svg" alt="Fish" />
+          <span>POISSON</span>
+        </div>
+        <div class="nav-item nav-itemPor">
+          <img src="./Algues.svg" alt="Algae" />
+          <span>ALGUES</span>
+        </div>
+        <div class="nav-item">
+          <img src="./Autres.svg" alt="Other" />
+          <span>AUTRES</span>
+        </div>
+      </nav>
+
+      <main class="species-grid">
+        <div class="species-card" data-model-src="fish3.glb">
+          <model-viewer
+            src="fish3.glb"
+            alt="Poisson Rouge"
+            camera-controls
+            shadow-intensity="1"
+            autoplay
+            animation-name="nager"
+          ></model-viewer>
+          <div class="species-name">POISSON ROUGE</div>
+        </div>
+        <div class="species-card" data-model-src="bluePowderTang.glb">
+          <model-viewer
+            src="bluePowderTang.glb"
+            alt="Poisson-Chirurgien Bleu"
+            camera-controls
+            shadow-intensity="1"
+            autoplay
+            animation-name="nager"
+          ></model-viewer>
+          <div class="species-name">POISSON-CHIRURGIEN BLEU</div>
+        </div>
+        <div class="species-card" data-model-src="ButterflyFish.glb">
+          <model-viewer
+            src="ButterflyFish.glb"
+            alt="Poisson-Papillon"
+            camera-controls
+            shadow-intensity="1"
+            autoplay
+            animation-name="nager"
+          ></model-viewer>
+          <div class="species-name">POISSON-PAPILLON</div>
+        </div>
+      </main>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const speciesGrid = document.querySelector(".species-grid");
+        const navItems = document.querySelectorAll(".nav-item");
+
+        const initialFishCards = `
+          <div class="species-card" data-model-src="fish3.glb">
+            <model-viewer
+              src="fish3.glb"
+              alt="Poisson Rouge"
+              camera-controls
+              shadow-intensity="1"
+              autoplay
+              animation-name="nager"
+            ></model-viewer>
+            <div class="species-name">POISSON ROUGE</div>
+          </div>
+          <div class="species-card" data-model-src="bluePowderTang.glb">
+            <model-viewer
+              src="bluePowderTang.glb"
+              alt="Poisson-Chirurgien Bleu"
+              camera-controls
+              shadow-intensity="1"
+              autoplay
+              animation-name="nager"
+            ></model-viewer>
+            <div class="species-name">POISSON-CHIRURGIEN BLEU</div>
+          </div>
+          <div class="species-card" data-model-src="ButterflyFish.glb">
+            <model-viewer
+              src="ButterflyFish.glb"
+              alt="Poisson-Papillon"
+              camera-controls
+              shadow-intensity="1"
+              autoplay
+              animation-name="nager"
+            ></model-viewer>
+            <div class="species-name">POISSON-PAPILLON</div>
+          </div>
+        `;
+
+        const aquariumCard = `
+          <div class="species-card" data-model-src="aquarium.glb">
+            <model-viewer
+              src="aquarium.glb"
+              alt="Aquarium"
+              camera-controls
+              shadow-intensity="1"
+            ></model-viewer>
+            <div class="species-name">AQUARIUM</div>
+          </div>
+        `;
+
+        function attachCardClickListeners() {
+          const speciesCards = document.querySelectorAll(".species-card");
+          speciesCards.forEach((card) => {
+            card.removeEventListener("click", handleCardClick); // Remove existing listeners to prevent duplicates
+            card.addEventListener("click", handleCardClick);
+          });
+        }
+
+        function handleCardClick() {
+          const modelSrc = this.dataset.modelSrc;
+          if (modelSrc === "aquarium.glb") {
+            window.open(`main.html`, "_blank"); // Ouvre main.html dans un nouvel onglet
+          } else if (modelSrc) {
+            window.open(`ar-viewer.html?model=${modelSrc}`, "_blank");
+          } else {
+            console.error("No data-model-src found for this card.");
+          }
+        }
+
+        function displayContent(type) {
+          speciesGrid.innerHTML = ""; // Clear current content
+          if (type === "POISSON") {
+            speciesGrid.innerHTML = initialFishCards;
+          } else if (type === "ALGUES") {
+            speciesGrid.innerHTML = "<p>Contenu pour les algues à venir...</p>";
+          } else if (type === "AUTRES") {
+            speciesGrid.innerHTML = aquariumCard;
+          }
+          attachCardClickListeners(); // Re-attach listeners after new content is added
+        }
+
+        navItems.forEach((item) => {
+          item.addEventListener("click", function () {
+            navItems.forEach((nav) => nav.classList.remove("active"));
+            this.classList.add("active");
+            const type = this.querySelector("span").textContent;
+            displayContent(type);
+          });
+        });
+
+        // Initial display
+        displayContent("POISSON");
+      });
+    </script>
+  </body>
+</html>

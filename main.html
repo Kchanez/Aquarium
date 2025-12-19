@@ -2,6 +2,7 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Aquarium AR</title>
 
     <script
@@ -32,7 +33,6 @@
         position: absolute;
         width: 200px;
         height: 250px;
-        pointer-events: none;
         z-index: 3;
         top: 40%;
         left: 20%;
@@ -40,7 +40,7 @@
       .bubbles {
         position: fixed;
         inset: 0;
-        z-index: 4; /* Temporairement augmenté pour le débogage */
+        z-index: 0;
         pointer-events: none;
       }
 
@@ -133,12 +133,159 @@
         bottom: 0;
         height: 450px;
         width: 300px;
-        z-index: 1;
+        z-index: 2;
       }
       .algae-3d model-viewer {
         width: 100%;
         height: 100%;
         --poster-color: transparent;
+      }
+
+      /* Styles responsives pour main.html */
+      @media (max-width: 767px) {
+        .fish {
+          width: 150px;
+          height: 180px;
+          top: 30%;
+          left: 10%;
+        }
+
+        .algae-3d {
+          height: 250px;
+          width: 150px;
+        }
+
+        .algae-3d.left-algae {
+          left: 15%;
+          bottom: 15%;
+        }
+        .algae-3d.left-algae-2 {
+          left: 5%;
+        }
+        .algae-3d.right-algae {
+          right: 0%;
+          bottom: 10%;
+        }
+        .algae-3d.right-algae-2 {
+          right: 5%;
+        }
+        .algae-3d.center-left-algae {
+          left: 20%;
+          height: 150px;
+          width: 80px;
+        }
+        .algae-3d.center-right-algae {
+          right: 20%;
+          height: 160px;
+          width: 90px;
+        }
+        .algae-3d.far-left-algae {
+          left: -5%;
+          height: 120px;
+          width: 70px;
+        }
+        .algae-3d.far-right-algae {
+          right: -5%;
+          height: 130px;
+          width: 80px;
+        }
+        .algae-3d.mid-left-algae {
+          left: 10%;
+          height: 180px;
+          width: 100px;
+        }
+        .algae-3d.mid-right-algae {
+          right: 10%;
+          height: 140px;
+          width: 70px;
+        }
+        .algae-3d.extra-left-algae {
+          left: 0%;
+          height: 110px;
+          width: 60px;
+        }
+        .algae-3d.extra-right-algae {
+          right: 30%;
+          height: 170px;
+          width: 100px;
+        }
+        .algae-3d.far-left-algae-2 {
+          left: -3%;
+          height: 140px;
+          width: 80px;
+        }
+        .algae-3d.far-right-algae-2 {
+          right: 5%;
+          height: 110px;
+          width: 60px;
+        }
+
+        #sand-model {
+          height: 200px;
+        }
+        #sand-model model-viewer,
+        #sand-model1 model-viewer,
+        #sand-model2 model-viewer {
+          transform: scaleX(8) scaleY(4);
+        }
+
+        #sand-model1 {
+          right: 15%;
+          bottom: 30%;
+          height: 15%;
+        }
+
+        #sand-model2 {
+          left: 30%;
+          bottom: 20%;
+          height: 15%;
+        }
+
+        #sandcastle-model {
+          height: 200px;
+          width: 200px;
+          bottom: 0%;
+          left: 50%;
+        }
+      }
+
+      @media (min-width: 768px) and (max-width: 1023px) {
+        .fish {
+          width: 180px;
+          height: 220px;
+          top: 35%;
+          left: 15%;
+        }
+
+        .algae-3d {
+          height: 350px;
+          width: 200px;
+        }
+
+        #sand-model model-viewer,
+        #sand-model1 model-viewer,
+        #sand-model2 model-viewer {
+          transform: scaleX(10) scaleY(5);
+        }
+
+        #sand-model1 {
+          right: 20%;
+          bottom: 40%;
+          height: 18%;
+        }
+
+        #sand-model2 {
+          left: 35%;
+          bottom: 25%;
+          height: 18%;
+        }
+
+        #sandcastle-model {
+          height: 250px;
+          width: 250px;
+          bottom: 0%;
+          left: 45%;
+        }
       }
       .algae-3d.left-algae {
         left: 27%;
@@ -225,6 +372,7 @@
         width: 100%;
         height: 100%;
         --poster-color: transparent;
+        transform: scaleX(11) scaleY(6);
       }
       #sand-model1 {
         position: fixed;
@@ -245,11 +393,11 @@
       }
       #sandcastle-model {
         position: absolute;
-        bottom: 0%; /* Ajustez la position au-dessus des algues */
+        bottom: 0%;
         left: 43%;
         transform: translateX(-50%);
-        height: 300px; /* Ajustez la hauteur */
-        width: 300px; /* Ajustez la largeur */
+        height: 300px;
+        width: 300px;
         z-index: 2;
       }
       #sandcastle-model model-viewer {
@@ -261,19 +409,6 @@
   </head>
 
   <body>
-    <!-- AQUARIUM AR 
-    <div id="aquarium">-->
-    <model-viewer
-      class="fish"
-      id="fish2"
-      src="fish3.glb"
-      ar
-      ar-modes="quick-look webxr"
-      camera-controls
-      shadow-intensity="1"
-    >
-    </model-viewer>
-    <!-- </div> -->
     <!-- FOND -->
     <div id="aquarium-bg"></div>
 
@@ -286,10 +421,10 @@
     <div id="sand-model">
       <model-viewer
         src="sable.glb"
-        alt="Modèle 3D d'algues"
+        alt="Modèle 3D de sable"
         shadow-intensity="1"
         ar
-      ar-modes="quick-look webxr"
+        ar-modes="webxr scene-viewer quick-look"
         camera-controls
         rotation-per-second="0deg"
         interaction-prompt="none"
@@ -303,8 +438,10 @@
     <div id="sand-model1">
       <model-viewer
         src="algues.glb"
-        alt="Modèle 3D d'algues"
+        alt="Modèle 3D de sable"
         shadow-intensity="1"
+        ar
+        ar-modes="webxr scene-viewer quick-look"
         camera-controls
         rotation-per-second="0deg"
         interaction-prompt="none"
@@ -317,8 +454,10 @@
     <div id="sand-model2">
       <model-viewer
         src="algues.glb"
-        alt="Modèle 3D d'algues"
+        alt="Modèle 3D de sable"
         shadow-intensity="1"
+        ar
+        ar-modes="webxr scene-viewer quick-look"
         camera-controls
         rotation-per-second="0deg"
         interaction-prompt="none"
@@ -329,12 +468,13 @@
     </div>
 
     <!-- ROCHES -->
-    <!--
     <div id="sandcastle-model">
       <model-viewer
         src="sandCastle.glb"
         alt="Modèle 3D de château de sable"
         camera-controls
+        ar
+        ar-modes="webxr scene-viewer quick-look"
         rotation-per-second="0deg"
         interaction-prompt="none"
         camera-orbit="0deg 75deg 100%"
@@ -342,7 +482,21 @@
       >
       </model-viewer>
     </div>
-    -->
+
+    <!-- AQUARIUM AR -->
+    <div id="aquarium">
+      <model-viewer
+        class="fish"
+        id="fish2"
+        src="fish3.glb"
+        ar
+        ar-modes="webxr scene-viewer quick-look"
+        rotation-per-second="0deg"
+        camera-controls
+        shadow-intensity="1"
+      >
+      </model-viewer>
+    </div>
 
     <script>
       /* ===================== */

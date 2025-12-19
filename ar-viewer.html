@@ -7,12 +7,11 @@
   <style>
     body {
         margin: 0;
-        padding: 0;
-        width: 100vw;
-        height: 100vh;
-        overflow: hidden;
-        background: transparent; /* Changé pour transparent */
-        position: relative;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      background: transparent; /* Changé pour transparent */
+      position: relative;
       }
 
     model-viewer {
@@ -27,8 +26,10 @@
     </style>
   </head>
 <body>
+  
   <model-viewer
       id="ar-model-viewer"
+      src="fish3.glb" 
       ar
       ar-modes="scene-viewer quick-look webxr"
       camera-controls

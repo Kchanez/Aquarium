@@ -80,10 +80,9 @@
       .nav-item img {
         margin-bottom: 5px;
       }
-      .nav-itemPor img
-    {
+      .nav-itemPor img {
         margin-bottom: 0px;
-    }
+      }
       .nav-item span {
         font-size: 0.8em;
         text-transform: uppercase;
@@ -197,7 +196,7 @@
     <div class="container">
       <header class="app-header">
         <div class="logo">
-          <img src="logo.svg" alt="Wifi" style="width: 10%;" />
+          <img src="logo.svg" alt="Wifi" style="width: 10%" />
         </div>
         <div class="status-icons">
           <!-- Placeholder for status icons -->
@@ -254,6 +253,16 @@
             animation-name="nager"
           ></model-viewer>
           <div class="species-name">POISSON-PAPILLON</div>
+        </div>
+        <div class="species-card" data-model-src="algues.glb">
+          <model-viewer
+            src="algues.glb"
+            alt="Algue"
+            camera-controls
+            shadow-intensity="1"
+            autoplay
+          ></model-viewer>
+          <div class="species-name">ALGUE</div>
         </div>
       </main>
     </div>
@@ -334,7 +343,18 @@
           if (type === "POISSON") {
             speciesGrid.innerHTML = initialFishCards;
           } else if (type === "ALGUES") {
-            speciesGrid.innerHTML = "<p>Contenu pour les algues à venir...</p>";
+            speciesGrid.innerHTML = `
+              <div class="species-card" data-model-src="algues.glb">
+                <model-viewer
+                  src="algues.glb"
+                  alt="Algue"
+                  camera-controls
+                  shadow-intensity="1"
+                  autoplay
+                ></model-viewer>
+                <div class="species-name">ALGUE</div>
+              </div>
+            `;
           } else if (type === "AUTRES") {
             speciesGrid.innerHTML = aquariumCard;
           }

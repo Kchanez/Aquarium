@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <title>AR Viewer</title>
-  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-  <style>
+  <head>
+    <meta charset="UTF-8" />
+    <title>AR Viewer</title>
+    <script
+      type="module"
+      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
+    ></script>
+    <style>
       body {
         margin: 0;
         background: transparent;
@@ -27,45 +30,69 @@
         color: white;
         cursor: pointer;
       }
-
     </style>
   </head>
-<body>
-  
-  <h2>Immersion – Eau augmentée</h2>
+  <body>
+    <h2>Immersion – Eau augmentée</h2>
 
-  <model-viewer
-    id="viewer"
-    src="fish3.glb"
-    ar
-    ar-modes="scene-viewer quick-look webxr"
-    camera-controls
-    auto-rotate
-    shadow-intensity="1">
-  </model-viewer>
+    <model-viewer
+      id="viewer"
+      src="fish3.glb"
+      ar
+      ar-modes="scene-viewer quick-look webxr"
+      camera-controls
+      auto-rotate
+      shadow-intensity="1"
+      autoplay
+    >
+    </model-viewer>
 
-  <div class="buttons">
-    <button onclick="changeModel('fish3.glb')"> 🐟 Fish </button>
-    <button onclick="changeModel('algues.glb')"> 🐋 Algues</button>
-    <button onclick="changeModel('ButterflyFish.glb')"> 🫧 Butterfly Fish</button>
-  </div>
+    <div class="buttons">
+      <button onclick="changeModel('fish3.glb')">🐟 Poisson Rouge</button>
+      <button onclick="changeModel('bluePowderTang.glb')">
+        🐠 Poisson-Chirurgien Bleu
+      </button>
+      <button onclick="changeModel('ButterflyFish.glb')">
+        🦋 Poisson-Papillon
+      </button>
+      <button onclick="changeModel('algues.glb')">🌿 Algue</button>
+    </div>
 
-
-
-  <script>
-      const modelViewer = document.getElementById("ar-model-viewer");
+    <script>
+      const modelViewerElement = document.getElementById("viewer");
       const urlParams = new URLSearchParams(window.location.search);
-      const model = urlParams.get("model");
+      const modelFromUrl = urlParams.get("model");
+      const buttonsContainer = document.querySelector(".buttons");
+      const allButtons = buttonsContainer.querySelectorAll("button");
 
-      if (model) {
-        modelViewer.src = model;
+      // Fonction pour mettre à jour le modèle et les boutons
+      function updateModelAndButtons(modelName) {
+        if (modelName) {
+          modelViewerElement.setAttribute("src", modelName);
+          // Cacher tous les boutons
+          allButtons.forEach((button) => (button.style.display = "none"));
+          // Afficher uniquement le bouton correspondant au modèle
+          allButtons.forEach((button) => {
+            if (button.onclick.toString().includes(`'${modelName}'`)) {
+              button.style.display = "inline-block";
+            }
+          });
+        }
+      }
+
+      // Si un modèle est passé via l'URL, l'utiliser
+      if (modelFromUrl) {
+        updateModelAndButtons(modelFromUrl);
+      } else {
+        // Sinon, utiliser le modèle par défaut et afficher tous les boutons
+        updateModelAndButtons(modelViewerElement.getAttribute("src")); // Utilise le src actuel comme modèle par défaut
+        allButtons.forEach((button) => (button.style.display = "inline-block"));
+      }
+
+      // La fonction changeModel est toujours utile si on veut ajouter d'autres boutons plus tard
+      function changeModel(model) {
+        updateModelAndButtons(model);
       }
     </script>
-  <script>
-    function changeModel(model) {
-      document.getElementById('viewer').setAttribute('src', model);
-    }
-  </script>
-
-</body>
+  </body>
 </html>
